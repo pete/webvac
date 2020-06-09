@@ -41,6 +41,7 @@ module WebVac
 	end
 
 	class Root < R
+		auto_head
 		get {
 			"++++++++++++[>+++++++++<-]>.+++.---."
 		}

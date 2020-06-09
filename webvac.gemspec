@@ -23,5 +23,5 @@ Gem::Specification.new { |s|
 		rainbows
 		magic
 	).each &s.method(:add_dependency)
-	s.version = '0.1.3'
+	s.version = '0.1.5'
 }
