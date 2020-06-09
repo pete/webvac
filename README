@@ -20,8 +20,7 @@ general as a result.
 
 = Quick Start
 
-[Check that your venti and Redis servers are operational.]
-
+  [Check that your venti and Redis servers are operational.]
   $ sudo ed /etc/webvac.json
   a
   '{"server_path_prepend":"/where/uploads/get/put/in/the/filesystem"}'
@@ -33,8 +32,8 @@ general as a result.
   $ webvac-server -D
   $ find /where/uploads/get/put/in/the/filesystem -type f -print0 |
    xargs -0 -n30 -P8 webvac-sweep -v -- 
-[At this point, you should be able to rm the files in server_path_prepend to
-start serving them out of venti.  Big ones are slow for now.  
+  [At this point, you should be able to rm the files in server_path_prepend
+  to start serving them out of venti.  Big ones are slow for now.]
 
 = Mise en place
 
@@ -66,10 +65,10 @@ The nginx config I used to test is in doc/examples.
 You will need to create a JSON file that specifies the configuration.
 The first readable file from the following list is used:
 
-· The filename given in the $WEBVAC_CONFIG environment variable.
-· ./config/webvac.json
-· $HOME/.webvac.json
-· /etc/webvac.json
+* The filename given in the $WEBVAC_CONFIG environment variable.
+* ./config/webvac.json
+* $HOME/.webvac.json
+* /etc/webvac.json
 
 Here is an annotated list of configuration options, all of which start
 with their default values.  You will almost certainly need to change
