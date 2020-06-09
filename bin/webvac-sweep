@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+%w(
+	webvac
+).each &method(:require)
+
+Encoding.default_external = Encoding::BINARY
+
+def die! msg
+	$stderr.puts msg
+	exit 1
+end
+
+def usage! o = $stderr, c = 1
+	o.puts <<-EOS.gsub(/^\t\t/, '')
+		#{$0} [-h|-help|--help] [-d] [-v] [--] $files
+		-d delets this (if the sweep is successful)
+		-v Be verbose
+		-h This usage message
+	EOS
+	exit c
+end
+
+include WebVac
+c = Config.load
+v = Vac.new c
+t = Table.new c
+
+args = ARGV.dup
+deletthis = false
+verbose = false
+
+until args.empty?
+	case args[0]
+	when '-h', '-help', '--help'
+		usage! $stdout, 0
+	when '-d'
+		deletthis = true
+	when '-v'
+		verbose = true
+	when '--'
+		args.shift
+		break
+	when /^-/
+		usage!
+	else
+		break
+	end
+	args.shift
+end
+
+args.each { |a|
+	die!("noexist #{a}") unless File.exist?(a)
+	sc = v.save!(a)
+	puts "#{a} -> #{sc}" if verbose
+	die!("wat #{a}") unless sc
+	t.rec_score! a, sc
+	t.meta_save! a, sc
+	File.unlink(a) if deletthis
+}

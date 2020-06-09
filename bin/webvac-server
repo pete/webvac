@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+%w(
+	webvac
+).each &method(:require)
+
+def die! msg
+	$stderr.puts msg
+	exit 1
+end
+
+def usage! o = $stderr, c = 1
+	o.puts <<-EOS.gsub(/^\t\t/, '')
+		#{$0} [-h|-help|--help] [-d] [--] $files
+		-d delets this (if the sweep is successful)
+		-v Be verbose
+		-h This usage message
+	EOS
+	exit c
+end
+
+include WebVac
+c = Config.load
+v = Vac.new c
+t = Table.new c
+
+args = ARGV.dup
+deletthis = false
+verbose = false
+
+def die! msg
+	$stderr.puts msg
+	exit 1
+end
+
+def usage! o = $stderr, c = 1
+	o.puts <<-EOS.gsub(/^\t\t/, '')
+		#{$0} [-h|-help|--help] [-l $host:$port] [-D] [--] $files
+		-h
+			This help.
+
+		The following options are passed through to rainbows:
+		-l $host:$port
+			Address to listen on.  Defaults to localhost:8891
+		-D
+			Daemonize the process.
+		-E $env
+			Rack env to use.  (Defaults to "production".)
+	EOS
+	exit c
+end
+
+TopDir = File.dirname(__dir__)
+rainbow_args = {
+	"-c" => "#{TopDir}/conf/rainbows.rb",
+	"-l" => "localhost:8891",
+	"-E" => "production",
+}
+rainbow_flags = []
+
+
+until args.empty?
+	case args[0]
+	when '-h', '-help', '--help'
+		usage! $stdout, 0
+	when '-l', '-E'
+		rainbow_args[args[0]] = args[1]
+		usage! if args[1].nil?
+		args.shift
+	when '-D'
+		rainbow_flags << args[0]
+	when '--'
+		args.shift
+		break
+	when /^-/
+		usage!
+	else
+		break
+	end
+	args.shift
+end
+
+exec(*[
+	'rainbows',
+	*rainbow_flags, 
+	*rainbow_args.to_a.flatten,
+	"#{TopDir}/config.ru"
+])
