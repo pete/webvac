@@ -3,7 +3,7 @@ Unordered:
 · The closure abuse in Serv precludes using the URL to generate the routes.
   This needs a fix in order to generalize beyond Pleroma.
 · Should be easy to stream rather than loading everything into memory,
-  but until then, big-ish files (≈2MB) take a second to get out of venti.
+  but until then, big-ish files (≈4MB) take a second to get out of venti.
   Obviously, it'll be faster and more reliable to implement the venti protocol.
 · Stats and webvac-unsweep.  This will allow hot objects to be swapped out of
   venti.

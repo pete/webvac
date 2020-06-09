@@ -52,7 +52,7 @@ For about 100GB of files, venti takes 86GB of disk (no surprise, since
 it's mostly JPGs and MP4s, so it's already compressed; the savings are
 probably from dedup), and Redis takes about 60MB of RAM for this.  All
 of the files were put into venti as part of the backup solution, but the
-originals weren't removed if they were bigger than 1MB (see doc/TODO).
+originals weren't removed if they were bigger than 4MB (see doc/TODO).
 The workers take some RAM to run.  CPU overhead is negligible.
 
 = Installation
