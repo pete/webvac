@@ -21,6 +21,7 @@ Gem::Specification.new { |s|
 		watts
 		json
 		rainbows
+		magic
 	).each &s.method(:add_dependency)
 	s.version = '0.1.3'
 }
