@@ -31,3 +31,14 @@ desc "Runs IRB, automatically require()ing #{spec.name}."
 task(:irb) {
 	exec "irb -Ilib -r#{spec.name}"
 }
+
+desc "Runs IRB, automatically require()ing #{spec.name}, with "\
+	"acme-suitable options"
+task(:airb) {
+	exec "irb -Ilib -r#{spec.name} --prompt default --noreadline"
+}
+
+desc "Runs nginx test server."
+task(:nginx) {
+	exec "nginx", "-c", "#{__dir__}/doc/nginx.example.conf"
+}
