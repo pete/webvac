@@ -32,6 +32,9 @@ module WebVac
 				'Content-Disposition' => "filename=\"#{name}\"",
 				'Fortune' => Fortunes.sample,
 			}.merge!(t.metadata(score) || {}).tap { |h|
+				# Now that we stream, this condition never happens.
+				# Maybe it's a good idea to wrap the IO object and fill in
+				# the extra data as needed.
 				if contents
 					h['Content-Type'] ||= t.guess_mime(contents) rescue nil
 					h['Content-Length'] ||= contents.bytesize.to_s
@@ -66,14 +69,12 @@ module WebVac
 			s = tab.path2score p
 			return [404, {}, ["404 Not found\nNo such path: #{p}\n"]] unless s
 			ct = Time.parse(env['HTTP_IF_MODIFIED_SINCE']) rescue nil
+			hs = headers(tab, p, s, nil)
 			if ct && ct.to_i > 0
-				hs = headers(tab, p, s, nil)
 				mt = Time.parse(hs['Last-Modified']) rescue nil
 				return [304, hs, []] if mt && mt > ct
 			end
-			contents = vac.load! s
-			hs = headers(tab, p, s, contents)
-			[200, headers(tab, p, s, contents), [contents]]
+			[200, hs, vac.load_io(s)]
 		}
 	end
 

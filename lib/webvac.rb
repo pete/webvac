@@ -89,14 +89,18 @@ module WebVac
 			io.read.chomp.sub(/^vac:/, '')
 		end
 
-		def load! vac
+		def load_io vac
 			unless /^vac:[a-f0-9]{40}$/.match(vac)
 				raise ArgumentError, "#{vac.inspect} not a vac score?"
 			end
 			IO.popen(
 				{'venti' => config.venti_server},
 				["#{config.plan9bin}/unvac", '-c', vac]
-			).tap { |io| Thread.new { Process.wait(io.pid) } }.read
+			).tap { |io| Thread.new { Process.wait(io.pid) } }			
+		end
+
+		def load! vac
+			load_io(vac).read
 		end
 	end
 
