@@ -1,29 +1,29 @@
 This is a somewhat specialized chunk of code!
 
-THIS IS ALSO BETA SOFTWARE.  CAVEAT EMPTOR.
-
 Using a lookup table in Redis and venti as the backing storage, webvac
-serves static content.  It comes with utilities "webvac-sweep" and
-"webvac-unsweep" that push things into venti and remove them from the
-filesystem and place the things back into the filesystem, respectively.
-The 'webvac' program itself starts up a webserver.  Give these programs
-'-h' or '--help' to see helpful(?) information, and see below for
-configuration.
+serves static content.  It comes with utility `webvac-sweep`, that
+pushes content into venti, optionally removing it from the filesystem.
+The `webvac-server` program itself starts up a webserver.  Give these
+programs '-h' or '--help' to see helpful(?) information, and see below
+for configuration.
 
-Currently I am only using it to serve uploads for UGC in Pleroma.  I
-have been using venti to do incremental backups of the data, and since
+Currently I am only using it to serve uploads for UGC in some small- to
+moderately high-traffic Pleroma instances.  I have been using venti to
+do incremental backups of the data (replication is speedy), and since
 the uploads are WORM ("write once, read many") data, I thought it'd be
-cool to serve the data directly out of venti.
+cool to serve the data directly out of venti.  It worked better than
+expected!
 
 I expect to use this more often and thus expect it to become a bit more
-general as a result.
+general as a result, but for right now, it makes a couple of assumptions
+about where it serves files.
 
 = Quick Start
 
   [Check that your venti and Redis servers are operational.]
   $ sudo ed /etc/webvac.json
   a
-  '{"server_path_prepend":"/where/uploads/get/put/in/the/filesystem"}'
+  {"server_path_prepend":"/where/uploads/get/put/in/the/filesystem"}
   .
   wq
   $ sudo $EDITOR /etc/nginx/whatever
@@ -47,12 +47,12 @@ to configure probably one thing.
 
 = Overhead
 
-For about 100GB of files, venti takes 86GB of disk (no surprise, since
-it's mostly JPGs and MP4s, so it's already compressed; the savings are
-probably from dedup), and Redis takes about 60MB of RAM for this.  All
-of the files were put into venti as part of the backup solution, but the
-originals weren't removed if they were bigger than 4MB (see doc/TODO).
-The workers take some RAM to run.  CPU overhead is negligible.
+Just empirically, for about 100GB of files, venti takes 86GB of disk (no
+surprise, since it's mostly JPGs and MP4s, so it's already compressed;
+the savings are probably from dedup), and Redis takes about 60MB of RAM
+for this.  All of the files were put into venti as part of the backup
+solution.  CPU overhead is negligible, the server takes about 200MB of
+RAM for both workers.
 
 = Installation
 
@@ -110,7 +110,12 @@ server_path_prepend.
 
 = Usage
 
-Afer configuring, you can run the server with `webvac-server`.  This will actually serve the content from venti, as long as it is present in the path→score index in Redis (so you can remove content as needed by just removing items from the index).  In order to add items, you run `webvac-sweep`.  
+Afer configuring, you can run the server with `webvac-server`.  This
+will actually serve the content from venti, as long as it is present in
+the path→score index in Redis (so you can remove content as needed by
+just removing items from the index).  In order to add items, you run
+`webvac-sweep`.  You can also delete the file (which will only happen if
+the sweep is successful) with `-d`.
 
 = TODO
 
@@ -124,4 +129,4 @@ See doc/TODO
 
 = I feel dirty
 
-You can throw BTC at 1BZz3ndJUoWhEvm1BfW3FzceAjFqKTwqWV .  Proceeds will go to funding the instance hosting thing.
+You can throw Bitcoin (BTC) at this address:  1BZz3ndJUoWhEvm1BfW3FzceAjFqKTwqWV .  Proceeds will go to funding the instance hosting thing.
